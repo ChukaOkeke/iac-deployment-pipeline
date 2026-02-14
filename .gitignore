@@ -2,4 +2,8 @@
 *.tfstate*
 .terraform.lock.hcl
 *.pem*
-*.tfvars
+*.tfvars*
+.venv
+.env
+*.plan
+*.json
