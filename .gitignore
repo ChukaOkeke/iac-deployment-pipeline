@@ -7,3 +7,5 @@
 .env
 *.plan
 *.json
+inventory.ini
+*.retry

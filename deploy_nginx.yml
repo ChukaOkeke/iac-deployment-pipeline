@@ -1,0 +1,40 @@
+# Playbook for Nginx deployment on EC2 instance using Ansible
+---
+- name: Install and Configure Nginx
+  hosts: webservers
+  become: yes  # Runs tasks as sudo
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: latest
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Deploy custom index.html
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Success!</title>
+              <style>
+                  body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+                  h1 { color: #232f3e; }
+              </style>
+          </head>
+          <body>
+              <h1>Terraform + Ansible</h1>
+              <p>Nothing fancy. Just me using Terraform and Ansible to tell you that my wife's name is Rosie, and she's a beautiful woman.</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html  # Path where Nginx serves the default page
+        mode: '0644'  # Set permissions for the file to be readable by the web server but only writable by the admin user
