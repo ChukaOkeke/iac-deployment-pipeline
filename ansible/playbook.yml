@@ -2,11 +2,11 @@
 ---
 - name: Install and Configure Nginx
   hosts: webservers
-  become: yes  # Runs tasks as sudo
+  become: true  # Runs tasks as sudo
   tasks:
     - name: Update apt cache
       apt:
-        update_cache: yes
+        update_cache: true
 
     - name: Install Nginx
       apt:
@@ -17,7 +17,7 @@
       service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Deploy custom index.html
       copy:
