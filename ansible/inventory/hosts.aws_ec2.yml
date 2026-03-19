@@ -1,0 +1,20 @@
+# Dynamic Inventory for EC2 instances
+# Use the AWS EC2 plugin 
+plugin: amazon.aws.aws_ec2
+
+# Specify your AWS region
+regions:
+  - eu-west-1
+
+# Only look for instances that are running  
+filters:
+  instance-state-name: running
+  tag:Name: web-server # Matches the tag name in Terraform code
+
+# How Ansible should identify the hosts (using their public IP addresses)
+hostnames:
+  - public-ip-address
+
+# Allows you to set variables directly for the discovered hosts
+compose:
+  ansible_user: "ubuntu" # Tells Ansible to use the 'ubuntu' user for these AWS instances
