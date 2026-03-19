@@ -137,3 +137,14 @@ resource "aws_instance" "web_server" {
     Name = "web-server"
   }
 }
+
+# Configure the S3 backend for remote state management
+terraform {
+  backend "s3" {
+    bucket         = "chuka-devops-state-storage" # The unique bucket name
+    key            = "dev/automated-infra-lifecycle/terraform.tfstate"
+    region         = "eu-west-1"  # Variables can't be used, must be hardcoded
+    dynamodb_table = "terraform-state-locking"
+    encrypt        = true
+  }
+}
