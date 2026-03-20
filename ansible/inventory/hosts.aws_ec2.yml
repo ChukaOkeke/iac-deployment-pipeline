@@ -15,6 +15,11 @@ filters:
 hostnames:
   - public-ip-address
 
+# Take the EC2 tags and turn them into Ansible groups for easier targeting in playbooks
+keyed_groups:
+  - prefix: tag
+    key: tags.Name
+
 # Allows you to set variables directly for the discovered hosts
 compose:
   ansible_user: "ubuntu" # Tells Ansible to use the 'ubuntu' user for these AWS instances
