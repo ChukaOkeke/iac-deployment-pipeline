@@ -112,3 +112,9 @@ variable "ec2_instance_type" {
   type = string
   default = "t3.micro"
 }
+
+variable "ssh_key_name" {
+  description = "The ssh key for the EC2 instance"
+  type = string
+  default = "solid-key"
+}
