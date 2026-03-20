@@ -13,7 +13,7 @@ filters:
 
 # How Ansible should identify the hosts (using their public IP addresses)
 hostnames:
-  - public-ip-address
+  - ip-address
 
 # Take the EC2 tags and turn them into Ansible groups for easier targeting in playbooks
 keyed_groups:
