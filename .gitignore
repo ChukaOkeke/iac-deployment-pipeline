@@ -9,3 +9,4 @@
 *.json
 inventory.ini
 *.retry
+tfplan

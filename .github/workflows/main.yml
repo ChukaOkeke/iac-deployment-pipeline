@@ -1,0 +1,91 @@
+name: Automated Infrastructure Lifecycle Management
+
+# Triggers the pipeline when code is pushed to the main branch
+on:
+  push:
+    branches:
+      - main
+
+# Required permissions for AWS OIDC authentication
+permissions:
+  id-token: write # Required for OIDC
+  contents: read  # Required for checkout
+
+jobs:
+  deploy:
+    name: Provision and Configure
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Pull your code into the GitHub Runner
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Authenticate with AWS using OIDC (No static keys needed)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }} # ARN of the IAM Role with Terraform permissions
+          aws-region: eu-west-1 
+
+      # 3. Security Scan with Checkov (Audit Mode)
+      - name: Run Checkov Security Scan
+        uses: bridgecrewio/checkov-action@master
+        continue-on-error: true # Don't fail the pipeline on security issues, just report them
+        with:
+          directory: ./terraform
+          framework: terraform
+          quiet: true # Only shows failed checks to keep logs clean
+
+      # 4. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 5. Initialize Terraform (Connects to S3 & DynamoDB)
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      # 6. Generate the Execution Plan (For audit logs)
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan -out=tfplan
+
+      # 7. Provision the Infrastructure
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan
+
+      # 8. Wait for EC2 Initialization
+      # Terraform finishes as soon as the API call succeeds, but the Linux OS takes a moment to boot.
+      - name: Wait for SSH to become available
+        run: sleep 45
+
+      # 9. Prepare Python for Ansible and the AWS Dynamic Inventory Plugin
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      # To ensure the runner finds the AWS plugin
+      - name: Install Ansible, Boto3, and AWS Collection    
+        run: |
+          pip install ansible boto3 botocore
+          ansible-galaxy collection install amazon.aws
+
+      # 10. Inject the SSH Key from GitHub Secrets
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # 11. Configure the EC2 Instance using Ansible
+      - name: Run Ansible Playbook
+        working-directory: ./ansible
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False" # Bypasses the "Are you sure you want to connect?" prompt
+        run: |
+          ansible-playbook -i inventory/hosts.aws_ec2.yml playbook.yml \
+          --private-key ~/.ssh/id_rsa \
+          -u ubuntu

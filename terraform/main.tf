@@ -126,7 +126,7 @@ resource "aws_instance" "web_server" {
   ami           = var.ec2_instance_ami # Define the AMI ID for the EC2 instance with variable reference in variables.tf
   instance_type = var.ec2_instance_type # Define the instance type for the EC2 instance with variable reference in variables.tf
   availability_zone = var.aws_az # Define the availability zone for the instance
-  key_name = "solid-key"
+  key_name = var.ssh_key_name # Define the SSH key name created on AWS for the EC2 instance
   
   network_interface {
     device_index = 0
