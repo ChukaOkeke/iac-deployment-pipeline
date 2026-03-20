@@ -1,7 +1,7 @@
 # Playbook for Nginx deployment on EC2 instance using Ansible
 ---
 - name: Install and Configure Nginx
-  hosts: webservers
+  hosts: tag_web_server  # Matches the keyed_group created in the dynamic inventory
   become: true  # Runs tasks as sudo
   tasks:
     - name: Update apt cache

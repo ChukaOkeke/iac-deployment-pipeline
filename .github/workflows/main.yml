@@ -67,25 +67,23 @@ jobs:
         with:
           python-version: '3.10'
       
-      # To ensure the runner finds the AWS plugin
-      - name: Install Ansible, Boto3, and AWS Collection    
+      # 10. Install Ansible and dependencies to ensure the runner finds the AWS plugin and talks to EC2
+      - name: Install Ansible and dependencies -- Boto3, and AWS Collection   
         run: |
           pip install ansible boto3 botocore
           ansible-galaxy collection install amazon.aws
 
-      # 10. Inject the SSH Key from GitHub Secrets
+      # 11. Inject the SSH Key from GitHub Secrets
       - name: Configure SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      # 11. Configure the EC2 Instance using Ansible
+      # 12. Configure the EC2 Instance using Ansible
       - name: Run Ansible Playbook
         working-directory: ./ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False" # Bypasses the "Are you sure you want to connect?" prompt
         run: |
-          ansible-playbook -i inventory/hosts.aws_ec2.yml playbook.yml \
-          --private-key ~/.ssh/id_rsa \
-          -u ubuntu
+          ansible-playbook playbook.yml
