@@ -32,7 +32,7 @@
               </style>
           </head>
           <body>
-              <h1>Terraform + Ansible</h1>
+              <h1>Terraform + Ansible + GitHub Actions</h1>
               <p>Nothing fancy. Just me using Terraform, Ansible, and GitHub Actions to tell you that my wife's name is Rosie, and she's a beautiful woman.</p>
           </body>
           </html>
