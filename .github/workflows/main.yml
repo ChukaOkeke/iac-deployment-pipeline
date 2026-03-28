@@ -30,8 +30,8 @@ jobs:
 
       # 3. Security Scan with Checkov (Audit Mode)
       - name: Run Checkov Security Scan
-        uses: bridgecrewio/checkov-action@master
-        continue-on-error: true # Don't fail the pipeline on security issues, just report them
+        uses: bridgecrewio/checkov-action@v12
+        continue-on-error: false # Fail the pipeline on security issues
         with:
           directory: ./terraform
           framework: terraform
