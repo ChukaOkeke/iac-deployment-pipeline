@@ -81,7 +81,7 @@ The architecture is designed to decouple the deployment engine from the target i
  - **Selected Terraform over Manual Config**: Ensures the environment is versioned and reproducible.
  - **Implemented OIDC**: Hardened security posture by removing the need for long-lived IAM keys.
  - **Utilized Ansible Dynamic Inventory**: Increased system resilience by "discovering" infrastructure metadata at runtime.
- - **Audit Mode with Checkov**: Integrated SAST to provide a continuous security feedback loop without blocking the initial build phase.
+ - **Integrated Checkov IaC scan**: Integrated SAST to identify and prevent infra misconfigurations.
 
 
 **4. Implementation**  
